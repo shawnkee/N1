@@ -1,0 +1,47 @@
+#n1 docker: dc1-server, openwrt
+
+#dc1-server
+#refer to https://www.right.com.cn/forum/thread-907351-1-1.html
+#refer to https://hub.docker.com/r/ponyopapa/dc1_server
+docker run -d  \
+        --name=dc1server  \
+        --restart=always  \
+        -p 8000:8000  \
+        -p 8800:8800  \
+        -p 8880:8880  \
+        -v /opt/dc1server/:/opt/  \
+        ponyopapa/dc1_server
+        
+#openwrt
+#refer to https://hub.docker.com/r/kanshudj/n1-openwrtgateway
+#config and run (edit the gateway ip to yours)
+ip link set eth0 promisc on
+modprobe pppoe
+docker network create -d macvlan --subnet=192.168.20.0/24 --gateway=192.168.20.1 -o parent=eth0 macnet
+docker pull kanshudj/n1-openwrtgateway
+docker run --restart always -d --network macnet --privileged kanshudj/n1-openwrtgateway /sbin/init
+#set ip
+docker ps
+docker exec -it ‘container id’ sh
+vi /etc/config/network
+/etc/init.d/network restart
+```
+config interface 'loopback'
+	option ifname 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fdbe:5012:1085::/48'
+
+config interface 'lan'
+	option type 'bridge'
+	option ifname 'eth0'
+	option proto 'static'
+	option ipaddr '192.168.123.2'
+	option netmask '255.255.255.0'
+	option ip6assign '60'
+  option gateway '192.168.123.1'
+  option dns '192.168.123.1 114.114.114.114'
+```    
