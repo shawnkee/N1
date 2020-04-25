@@ -1,8 +1,8 @@
-#n1 docker: dc1-server, openwrt
+##n1 docker: dc1-server, openwrt
 
-#dc1-server
-#refer to https://www.right.com.cn/forum/thread-907351-1-1.html
-#refer to https://hub.docker.com/r/ponyopapa/dc1_server
+###dc1-server
+###refer to https://www.right.com.cn/forum/thread-907351-1-1.html
+###refer to https://hub.docker.com/r/ponyopapa/dc1_server
 docker run -d  \
         --name=dc1server  \
         --restart=always  \
@@ -12,15 +12,15 @@ docker run -d  \
         -v /opt/dc1server/:/opt/  \
         ponyopapa/dc1_server
         
-#openwrt
-#refer to https://hub.docker.com/r/kanshudj/n1-openwrtgateway
-#config and run (edit the gateway ip to yours)
+###openwrt
+###refer to https://hub.docker.com/r/kanshudj/n1-openwrtgateway
+###config and run (edit the gateway ip to yours)
 ip link set eth0 promisc on
 modprobe pppoe
 docker network create -d macvlan --subnet=192.168.20.0/24 --gateway=192.168.20.1 -o parent=eth0 macnet
 docker pull kanshudj/n1-openwrtgateway
 docker run --restart always -d --network macnet --privileged kanshudj/n1-openwrtgateway /sbin/init
-#set ip
+###set ip
 docker ps
 docker exec -it ‘container id’ sh
 vi /etc/config/network
